@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Cau1_TiemTapHoa
+namespace Cau2_QuanCaPhe
 {
     internal static class Program
     {
@@ -9,7 +9,7 @@ namespace Cau1_TiemTapHoa
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new FormHangHoa());
+            Application.Run(new FormQuanCaPhe());
         }
     }
 }

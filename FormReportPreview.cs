@@ -9,7 +9,7 @@ using FastReport;
 using FastReport.Export.Image;
 using FastReport.Export.PdfSimple;
 
-namespace Cau1_TiemTapHoa
+namespace Cau2_QuanCaPhe
 {
     public class FormReportPreview : Form
     {
@@ -17,6 +17,7 @@ namespace Cau1_TiemTapHoa
         private readonly List<Image> _pageImages = new List<Image>();
         private int _currentPageIndex = 0;
         private float _zoomFactor = 1.0f;
+        private readonly string _defaultPdfName;
 
         private ToolStrip _toolStrip = null!;
         private ToolStripButton _btnPrint = null!;
@@ -35,9 +36,10 @@ namespace Cau1_TiemTapHoa
         private Panel _pnlScroll = null!;
         private PictureBox _picPage = null!;
 
-        public FormReportPreview(Report report, string title = "FastReport Preview")
+        public FormReportPreview(Report report, string title = "FastReport Preview", string defaultPdfName = "HoaDon.pdf")
         {
             _report = report;
+            _defaultPdfName = defaultPdfName;
             Text = title;
             Size = new Size(950, 750);
             StartPosition = FormStartPosition.CenterParent;
@@ -58,14 +60,14 @@ namespace Cau1_TiemTapHoa
             _btnPrint = new ToolStripButton("In (Print)")
             {
                 DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
-                ToolTipText = "In báo cáo"
+                ToolTipText = "In hóa đơn"
             };
             _btnPrint.Click += BtnPrint_Click;
 
             _btnExportPdf = new ToolStripButton("Xuất PDF")
             {
                 DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
-                ToolTipText = "Xuất tài liệu sang PDF"
+                ToolTipText = "Xuất hóa đơn sang PDF"
             };
             _btnExportPdf.Click += BtnExportPdf_Click;
 
@@ -127,7 +129,6 @@ namespace Cau1_TiemTapHoa
             };
             _picPage.Paint += (s, e) =>
             {
-                // Draw paper border & shadow
                 ControlPaint.DrawBorder(e.Graphics, _picPage.ClientRectangle, Color.DarkGray, ButtonBorderStyle.Solid);
             };
 
@@ -221,7 +222,6 @@ namespace Cau1_TiemTapHoa
             _picPage.Size = new Size(w, h);
             _picPage.Image = img;
 
-            // Center in scroll panel
             int posX = Math.Max(20, (_pnlScroll.ClientSize.Width - w) / 2);
             _picPage.Location = new Point(posX, 20);
         }
@@ -231,8 +231,8 @@ namespace Cau1_TiemTapHoa
             using SaveFileDialog sfd = new SaveFileDialog
             {
                 Filter = "PDF Files (*.pdf)|*.pdf",
-                Title = "Xuất PDF",
-                FileName = "BangGia.pdf"
+                Title = "Xuất PDF Hóa đơn",
+                FileName = _defaultPdfName
             };
 
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -248,6 +248,11 @@ namespace Cau1_TiemTapHoa
                     {
                         Process.Start(new ProcessStartInfo(sfd.FileName) { UseShellExecute = true });
                     }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("File PDF đang được mở bởi một chương trình khác. Vui lòng đóng file rồi thử lại!",
+                        "Lỗi file", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 catch (Exception ex)
                 {
